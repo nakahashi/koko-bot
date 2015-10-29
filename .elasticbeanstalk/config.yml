@@ -1,0 +1,10 @@
+branch-defaults:
+  master:
+    environment: koko-bot-dev
+global:
+  application_name: koko-bot
+  default_ec2_keyname: aws-eb
+  default_platform: Node.js
+  default_region: ap-northeast-1
+  profile: eb-cli
+  sc: git

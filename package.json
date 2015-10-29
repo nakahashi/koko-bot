@@ -1,0 +1,30 @@
+{
+  "name": "koko-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node --harmony ./lib/index.js",
+    "build": "gulp build",
+    "gulp": "gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.3.0",
+    "gulp-watch": "^4.3.5",
+    "gulp-plumber": "^1.0.1"
+  },
+  "dependencies": {
+    "koa": "^1.1.0",
+    "koa-route": "^2.4.2",
+    "request": "^2.65.0",
+    "twit": "^2.1.0"
+  }
+}
