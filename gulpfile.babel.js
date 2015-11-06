@@ -6,7 +6,6 @@ import plumber from 'gulp-plumber'
 let srcDir = './src/**/*.js'
 
 gulp.task('build', () => {
-
   return gulp.src(srcDir)
     .pipe(plumber())
     .pipe(babel({blacklist: ['regenerator']}))
