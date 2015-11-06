@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/models/user.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/nakahashi/koko-bot.git" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/bot.js~Bot.html">Bot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/dm-dialog.js~DMDialog.html">DMDialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/favoreturn.js~Favoreturn.html">Favoreturn</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/hello.js~Hello.html">Hello</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">models</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/models/user.js~User.html">User</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/models/user.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import AWS from &apos;aws-sdk&apos;;
+import DOC from &apos;dynamodb-doc&apos;
+import &apos;babel/polyfill&apos;;
+
+const TABLENAME = &apos;users&apos;;
+const db = new AWS.DynamoDB({ region: &apos;ap-northeast-1&apos; });
+const doc = new DOC.DynamoDB(db);
+
+/**
+ * AWS&#x306E;DynamoDB&#x306B;&#x683C;&#x7D0D;&#x3059;&#x308B;&#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x306E;&#x30E2;&#x30C7;&#x30EB;&#x3067;&#x3059;&#x3002;
+ */
+export default class User {
+  /**
+   * @param {string} id - &#x30E6;&#x30FC;&#x30B6;ID
+   */
+  constructor(id) {
+    /**
+    * @type {string} id &#x30E6;&#x30FC;&#x30B6;ID
+    * @type {string} context &#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;ID
+     */
+    this.id = id;
+    this.context = &apos;&apos;;
+  }
+
+  /**
+   * &#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x3092;&#x4FDD;&#x5B58;&#x3057;&#x307E;&#x3059;&#x3002;
+   */
+  save() {
+    return new Promise((resolve, reject) =&gt; {
+      let params = {};
+      params.TableName = TABLENAME;
+      params.Item = { &apos;id&apos;: this.id, &apos;context&apos;: this.context };
+
+      doc.putItem(params, (err) =&gt; {
+        if (err) { reject(err) }
+        else { resolve() }
+      });
+    });
+  }
+
+  /**
+   * &#x5168;&#x3066;&#x306E;&#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x3092;&#x53D6;&#x5F97;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @returns {User[]} &#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x914D;&#x5217;
+   */
+  static all() {
+    return new Promise((resolve, reject) =&gt; {
+      let params = {};
+      params.TableName = TABLENAME;
+      params.Select = &apos;ALL_ATTRIBUTES&apos;;
+
+      doc.scan(params, (err, res) =&gt; {
+        if (err) { reject(err) }
+
+        let users = [];
+        if (res.Count &gt; 0) {
+          users = res.Items.map((item) =&gt; { return createUser(item) });
+        }
+        resolve(users);
+      });
+    });
+  }
+
+  /**
+   * &#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x3092;&#x53D6;&#x5F97;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param {string} id - &#x30E6;&#x30FC;&#x30B6;ID
+   * @returns {User} &#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;
+   */
+  static find(id) {
+    return new Promise((resolve, reject) =&gt; {
+      let params = {};
+      params.TableName = TABLENAME;
+      params.Key = {id};
+
+      doc.getItem(params, (err, data) =&gt; {
+        if (err) { reject(err) }
+
+        let user = data.Item ? createUser(data.Item) : null;
+        resolve(user);
+      });
+    });
+  }
+
+  /**
+   * &#x30E6;&#x30FC;&#x30B6;&#x60C5;&#x5831;&#x3092;&#x7834;&#x68C4;&#x3057;&#x307E;&#x3059;&#x3002;
+   * @param {string} id - &#x30E6;&#x30FC;&#x30B6;ID
+   */
+  static destroy(id) {
+    return new Promise((resolve, reject) =&gt; {
+      User.find(id).then(user =&gt; {
+        let params = {};
+        params.TableName = TABLENAME;
+        params.Key = {id};
+
+        doc.deleteItem(params, (err) =&gt; {
+          if (err) { reject(err) }
+          else { resolve() }
+        });
+      }).catch(err =&gt; {
+        reject(err);
+      });
+    });
+  }
+}
+
+function createUser(item) {
+  let user = new User(item.id);
+  user.context = item.context | &apos;&apos;;
+  return user;
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.3)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

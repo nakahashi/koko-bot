@@ -15,8 +15,8 @@ export default class User {
    */
   constructor(id) {
     /**
-    * @type {string} id - ユーザID
-    * @type {string} context - コンテキストID
+    * @type {string} id
+    * @type {string} context
      */
     this.id = id;
     this.context = '';
