@@ -11,7 +11,6 @@ export default class DMDialog {
 
     let status = {};
     stream.on('direct_message', (data) => {
-      console.log(data);
       let message = data.direct_message;
 
       if (message.sender_id_str === adapter.id) return;
@@ -30,7 +29,6 @@ export default class DMDialog {
         status.context = body.context;
         status.mode = body.mode;
 
-          console.log(reply);
         api.post('direct_messages/new', reply, (err, data, res) => {});
       });
     });
