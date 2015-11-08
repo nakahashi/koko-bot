@@ -2,7 +2,7 @@
   "name": "koko-bot",
   "version": "1.0.0",
   "description": "Twitter bot with dialog",
-  "main": "app.js",
+  "main": "src/app.js",
   "directories": {
     "test": "test"
   },

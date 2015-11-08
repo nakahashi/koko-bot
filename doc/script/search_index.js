@@ -1,8 +1,8 @@
 window.esdocSearchIndex = [
   [
-    "koko-bot/src/bot.js~bot",
-    "class/src/bot.js~Bot.html",
-    "<span>Bot</span> <span class=\"search-result-import-path\">koko-bot/src/bot.js</span>",
+    "koko-bot~bot",
+    "class/src/app.js~Bot.html",
+    "<span>Bot</span> <span class=\"search-result-import-path\">koko-bot</span>",
     "class"
   ],
   [
@@ -28,6 +28,12 @@ window.esdocSearchIndex = [
     "class/src/models/user.js~User.html",
     "<span>User</span> <span class=\"search-result-import-path\">koko-bot/src/models/user.js</span>",
     "class"
+  ],
+  [
+    "koko-bot~koko",
+    "function/index.html#static-function-koko",
+    "<span>koko</span> <span class=\"search-result-import-path\">koko-bot</span>",
+    "function"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~array",
@@ -396,27 +402,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/bot.js",
-    "file/src/bot.js.html",
-    "src/bot.js",
+    "src/app.js",
+    "file/src/app.js.html",
+    "src/app.js",
     "file"
   ],
   [
-    "src/bot.js~bot#adapter",
-    "class/src/bot.js~Bot.html#instance-member-adapter",
-    "src/bot.js~Bot#adapter",
+    "src/app.js~bot#adapter",
+    "class/src/app.js~Bot.html#instance-member-adapter",
+    "src/app.js~Bot#adapter",
     "member"
   ],
   [
-    "src/bot.js~bot#constructor",
-    "class/src/bot.js~Bot.html#instance-constructor-constructor",
-    "src/bot.js~Bot#constructor",
+    "src/app.js~bot#constructor",
+    "class/src/app.js~Bot.html#instance-constructor-constructor",
+    "src/app.js~Bot#constructor",
     "method"
   ],
   [
-    "src/bot.js~bot#start",
-    "class/src/bot.js~Bot.html#instance-method-start",
-    "src/bot.js~Bot#start",
+    "src/app.js~bot#start",
+    "class/src/app.js~Bot.html#instance-method-start",
+    "src/app.js~Bot#start",
     "method"
   ],
   [

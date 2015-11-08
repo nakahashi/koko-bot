@@ -32,7 +32,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/bot.js~Bot.html">Bot</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/app.js~Bot.html">Bot</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-koko">koko</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/dm-dialog.js~DMDialog.html">DMDialog</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/favoreturn.js~Favoreturn.html">Favoreturn</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/hello.js~Hello.html">Hello</a></span></span></li>
@@ -44,13 +45,12 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/index.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import koa from &apos;koa&apos;;
 import route from &apos;koa-route&apos;
-import koko from &apos;../app&apos;;
+import koko from &apos;./app&apos;;
 
-koko.start();
+koko().start();
 
 var server = koa();
 
-// &#x3053;&#x3053;&#x3067;()=&gt;&#x3092;&#x4F7F;&#x3046;&#x3068;this&#x306E;&#x6271;&#x3044;&#x304C;&#x5909;&#x308F;&#x3063;&#x3066;&#x53D7;&#x3051;&#x4ED8;&#x3051;&#x3089;&#x308C;&#x306A;&#x304F;&#x306A;&#x308B;&#x3002;&#x3057;&#x3087;&#x307C;&#x3044;&#x3002;&#x3002;
 server.use(route.get(&apos;/&apos;, function *() {
   this.body = &apos;hello world&apos;;
 }));

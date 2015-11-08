@@ -24,6 +24,7 @@ export default class User {
 
   /**
    * ユーザ情報を保存します。
+   * @returns {Promise<Error>}
    */
   save() {
     return new Promise((resolve, reject) => {
@@ -40,7 +41,7 @@ export default class User {
 
   /**
    * 全てのユーザ情報を取得します。
-   * @returns {User[]} ユーザ情報配列
+   * @returns {Promise<User[], Error>} ユーザ情報配列
    */
   static all() {
     return new Promise((resolve, reject) => {
@@ -63,7 +64,7 @@ export default class User {
   /**
    * ユーザ情報を取得します。
    * @param {string} id - ユーザID
-   * @returns {User} ユーザ情報
+   * @returns {Promise<User, Error>} ユーザ情報
    */
   static find(id) {
     return new Promise((resolve, reject) => {
@@ -83,6 +84,7 @@ export default class User {
   /**
    * ユーザ情報を破棄します。
    * @param {string} id - ユーザID
+   * @returns {Promise<Error>}
    */
   static destroy(id) {
     return new Promise((resolve, reject) => {

@@ -2,7 +2,7 @@ import koa from 'koa';
 import route from 'koa-route'
 import koko from './app';
 
-koko.start();
+koko().start();
 
 var server = koa();
 

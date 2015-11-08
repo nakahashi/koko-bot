@@ -10,7 +10,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import req from 'request';\r\nlet request = req.defaults({strictSSL: false});\r\n\r\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\r\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\r\n\r\nexport default class DMDialog {\r\n  static start(adapter) {\r\n    let api = adapter.api;\r\n    let stream = api.stream('user');\r\n\r\n    let status = {};\r\n    stream.on('direct_message', (data) => {\r\n      console.log(data);\r\n      let message = data.direct_message;\r\n\r\n      if (message.sender_id_str === adapter.id) return;\r\n\r\n      status.utt = message.text;\r\n      status.nickname = message.sender_screen_name;\r\n\r\n      let param = {body: JSON.stringify(status)};\r\n      request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param, (err, res, data) => {\r\n        let body = JSON.parse(data);\r\n        let reply = {\r\n          user_id: message.sender_id_str,\r\n          text: body.utt\r\n        };\r\n\r\n        status.context = body.context;\r\n        status.mode = body.mode;\r\n\r\n          console.log(reply);\r\n        api.post('direct_messages/new', reply, (err, data, res) => {});\r\n      });\r\n    });\r\n  }\r\n}\r\n"
+    "content": "import req from 'request';\r\nlet request = req.defaults({strictSSL: false});\r\n\r\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\r\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\r\n\r\nexport default class DMDialog {\r\n  static start(adapter) {\r\n    let api = adapter.api;\r\n    let stream = api.stream('user');\r\n\r\n    let status = {};\r\n    stream.on('direct_message', (data) => {\r\n      let message = data.direct_message;\r\n\r\n      if (message.sender_id_str === adapter.id) return;\r\n\r\n      status.utt = message.text;\r\n      status.nickname = message.sender_screen_name;\r\n\r\n      let param = {body: JSON.stringify(status)};\r\n      request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param, (err, res, data) => {\r\n        let body = JSON.parse(data);\r\n        let reply = {\r\n          user_id: message.sender_id_str,\r\n          text: body.utt\r\n        };\r\n\r\n        status.context = body.context;\r\n        status.mode = body.mode;\r\n\r\n        api.post('direct_messages/new', reply, (err, data, res) => {});\r\n      });\r\n    });\r\n  }\r\n}\r\n"
   },
   {
     "__docId__": 1,
@@ -223,13 +223,13 @@
     "kind": "file",
     "static": true,
     "variation": null,
-    "name": "src/bot.js",
+    "name": "src/app.js",
     "memberof": null,
-    "longname": "src/bot.js",
+    "longname": "src/app.js",
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import fs from 'fs';\r\nimport path from 'path';\r\n\r\nexport default class Bot {\r\n  constructor(adapter) {\r\n    this.adapter = adapter;\r\n  }\r\n\r\n  start() {\r\n    const DIRECTORY = 'actions';\r\n    const EXT = '.js';\r\n\r\n    fs.readdir(`${__dirname}/${DIRECTORY}`, (err, files) => {\r\n      if (err) throw err;\r\n\r\n      files.filter(file => {\r\n        return path.extname(file) === EXT;\r\n      }).map(file => {\r\n        return `./${DIRECTORY}/${file}`;\r\n      }).forEach(action => {\r\n        require(action).start(this.adapter);\r\n      });\r\n    });\r\n\r\n    console.log('bot start!');\r\n  }\r\n}\r\n"
+    "content": "import fs from 'fs';\r\nimport path from 'path';\r\nimport Twit from 'twit';\r\n\r\n/**\r\n * Bot本体の動作を定義するクラスです。\r\n */\r\nexport class Bot {\r\n  /**\r\n   * @param {Object} adapter - ボットが動作するサービスとのアダプタ\r\n   * @param {Twit} adapter.api - サービスとのAPIの実装（当面Twitのインスタンス）\r\n   * @param {string} adapter.id - サービス上のID\r\n   */\r\n  constructor(adapter) {\r\n    this.adapter = adapter;\r\n  }\r\n\r\n  /**\r\n   * ボットを起動します。\r\n   * このとき、'./action'フォルダ内にある全jsのクラスが持つstart()メソッドをコールします。\r\n   */\r\n  start() {\r\n    const DIRECTORY = 'actions';\r\n    const EXT = '.js';\r\n\r\n    fs.readdir(`${__dirname}/${DIRECTORY}`, (err, files) => {\r\n      if (err) throw err;\r\n\r\n      files.filter(file => {\r\n        return path.extname(file) === EXT;\r\n      }).map(file => {\r\n        return `./${DIRECTORY}/${file}`;\r\n      }).forEach(action => {\r\n        require(action).start(this.adapter);\r\n      });\r\n    });\r\n\r\n    console.log('bot start!');\r\n  }\r\n}\r\n\r\n/**\r\n * Twitterに接続したBotインスタンスを生成します。\r\n * @returns {Bot}\r\n */\r\nexport default function koko() {\r\n  let twitter = new Twit({\r\n    consumer_key: process.env.BOT_TWITTER_KEY,\r\n    consumer_secret: process.env.BOT_TWITTER_SECRET,\r\n    access_token: process.env.BOT_TWITTER_TOKEN,\r\n    access_token_secret: process.env.BOT_TWITTER_TOKEN_SECRET\r\n  });\r\n\r\n  let koko = new Bot({\r\n    api: twitter,\r\n    id: process.env.BOT_TWITTER_ID\r\n  });\r\n\r\n  return koko;\r\n}\r\n"
   },
   {
     "__docId__": 13,
@@ -237,15 +237,14 @@
     "static": true,
     "variation": null,
     "name": "Bot",
-    "memberof": "src/bot.js",
-    "longname": "src/bot.js~Bot",
+    "memberof": "src/app.js",
+    "longname": "src/app.js~Bot",
     "access": null,
     "export": true,
-    "importPath": "koko-bot/src/bot.js",
-    "importStyle": "Bot",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
+    "importPath": "koko-bot",
+    "importStyle": "{Bot}",
+    "description": "Bot本体の動作を定義するクラスです。",
+    "lineNumber": 8,
     "interface": false
   },
   {
@@ -254,18 +253,41 @@
     "static": false,
     "variation": null,
     "name": "constructor",
-    "memberof": "src/bot.js~Bot",
-    "longname": "src/bot.js~Bot#constructor",
+    "memberof": "src/app.js~Bot",
+    "longname": "src/app.js~Bot#constructor",
     "access": null,
     "description": null,
-    "lineNumber": 5,
-    "undocument": true,
+    "lineNumber": 14,
     "params": [
       {
-        "name": "adapter",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "adapter",
+        "description": "ボットが動作するサービスとのアダプタ"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Twit"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "adapter.api",
+        "description": "サービスとのAPIの実装（当面Twitのインスタンス）"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "adapter.id",
+        "description": "サービス上のID"
       }
     ],
     "generator": false
@@ -276,11 +298,11 @@
     "static": false,
     "variation": null,
     "name": "adapter",
-    "memberof": "src/bot.js~Bot",
-    "longname": "src/bot.js~Bot#adapter",
+    "memberof": "src/app.js~Bot",
+    "longname": "src/app.js~Bot#adapter",
     "access": null,
     "description": null,
-    "lineNumber": 6,
+    "lineNumber": 15,
     "undocument": true,
     "type": {
       "types": [
@@ -294,17 +316,47 @@
     "static": false,
     "variation": null,
     "name": "start",
-    "memberof": "src/bot.js~Bot",
-    "longname": "src/bot.js~Bot#start",
+    "memberof": "src/app.js~Bot",
+    "longname": "src/app.js~Bot#start",
     "access": null,
-    "description": null,
-    "lineNumber": 9,
-    "undocument": true,
+    "description": "ボットを起動します。\nこのとき、'./action'フォルダ内にある全jsのクラスが持つstart()メソッドをコールします。",
+    "lineNumber": 22,
     "params": [],
     "generator": false
   },
   {
     "__docId__": 17,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "koko",
+    "memberof": "src/app.js",
+    "longname": "src/app.js~koko",
+    "access": null,
+    "export": true,
+    "importPath": "koko-bot",
+    "importStyle": "koko",
+    "description": "Twitterに接続したBotインスタンスを生成します。",
+    "lineNumber": 46,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Bot}"
+      }
+    ],
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Bot"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 18,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -314,10 +366,10 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import koa from 'koa';\r\nimport route from 'koa-route'\r\nimport koko from '../app';\r\n\r\nkoko.start();\r\n\r\nvar server = koa();\r\n\r\n// ここで()=>を使うとthisの扱いが変わって受け付けられなくなる。しょぼい。。\r\nserver.use(route.get('/', function *() {\r\n  this.body = 'hello world';\r\n}));\r\n\r\nvar port = process.env.PORT || 3000;\r\nserver.listen(port);\r\nconsole.log('listening on port : ' + port);\r\n"
+    "content": "import koa from 'koa';\r\nimport route from 'koa-route'\r\nimport koko from './app';\r\n\r\nkoko().start();\r\n\r\nvar server = koa();\r\n\r\nserver.use(route.get('/', function *() {\r\n  this.body = 'hello world';\r\n}));\r\n\r\nvar port = process.env.PORT || 3000;\r\nserver.listen(port);\r\nconsole.log('listening on port : ' + port);\r\n"
   },
   {
-    "__docId__": 18,
+    "__docId__": 19,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -338,7 +390,7 @@
     }
   },
   {
-    "__docId__": 19,
+    "__docId__": 20,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -350,7 +402,7 @@
     "importPath": "koko-bot/src/index.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 14,
+    "lineNumber": 13,
     "undocument": true,
     "type": {
       "types": [
@@ -359,7 +411,7 @@
     }
   },
   {
-    "__docId__": 20,
+    "__docId__": 21,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -369,10 +421,10 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import AWS from 'aws-sdk';\r\nimport DOC from 'dynamodb-doc'\r\nimport 'babel/polyfill';\r\n\r\nconst TABLENAME = 'users';\r\nconst db = new AWS.DynamoDB({ region: 'ap-northeast-1' });\r\nconst doc = new DOC.DynamoDB(db);\r\n\r\n/**\r\n * AWSのDynamoDBに格納するユーザ情報のモデルです。\r\n */\r\nexport default class User {\r\n  /**\r\n   * @param {string} id - ユーザID\r\n   */\r\n  constructor(id) {\r\n    /**\r\n    * @type {string} id ユーザID\r\n    * @type {string} context コンテキストID\r\n     */\r\n    this.id = id;\r\n    this.context = '';\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を保存します。\r\n   */\r\n  save() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Item = { 'id': this.id, 'context': this.context };\r\n\r\n      doc.putItem(params, (err) => {\r\n        if (err) { reject(err) }\r\n        else { resolve() }\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * 全てのユーザ情報を取得します。\r\n   * @returns {User[]} ユーザ情報配列\r\n   */\r\n  static all() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Select = 'ALL_ATTRIBUTES';\r\n\r\n      doc.scan(params, (err, res) => {\r\n        if (err) { reject(err) }\r\n\r\n        let users = [];\r\n        if (res.Count > 0) {\r\n          users = res.Items.map((item) => { return createUser(item) });\r\n        }\r\n        resolve(users);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を取得します。\r\n   * @param {string} id - ユーザID\r\n   * @returns {User} ユーザ情報\r\n   */\r\n  static find(id) {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Key = {id};\r\n\r\n      doc.getItem(params, (err, data) => {\r\n        if (err) { reject(err) }\r\n\r\n        let user = data.Item ? createUser(data.Item) : null;\r\n        resolve(user);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を破棄します。\r\n   * @param {string} id - ユーザID\r\n   */\r\n  static destroy(id) {\r\n    return new Promise((resolve, reject) => {\r\n      User.find(id).then(user => {\r\n        let params = {};\r\n        params.TableName = TABLENAME;\r\n        params.Key = {id};\r\n\r\n        doc.deleteItem(params, (err) => {\r\n          if (err) { reject(err) }\r\n          else { resolve() }\r\n        });\r\n      }).catch(err => {\r\n        reject(err);\r\n      });\r\n    });\r\n  }\r\n}\r\n\r\nfunction createUser(item) {\r\n  let user = new User(item.id);\r\n  user.context = item.context | '';\r\n  return user;\r\n}\r\n"
+    "content": "import AWS from 'aws-sdk';\r\nimport DOC from 'dynamodb-doc'\r\nimport 'babel/polyfill';\r\n\r\nconst TABLENAME = 'users';\r\nconst db = new AWS.DynamoDB({ region: 'ap-northeast-1' });\r\nconst doc = new DOC.DynamoDB(db);\r\n\r\n/**\r\n * AWSのDynamoDBに格納するユーザ情報のモデルです。\r\n */\r\nexport default class User {\r\n  /**\r\n   * @param {string} id - ユーザID\r\n   */\r\n  constructor(id) {\r\n    /**\r\n    * @type {string} id\r\n    * @type {string} context\r\n     */\r\n    this.id = id;\r\n    this.context = '';\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を保存します。\r\n   * @returns {Promise<Error>}\r\n   */\r\n  save() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Item = { 'id': this.id, 'context': this.context };\r\n\r\n      doc.putItem(params, (err) => {\r\n        if (err) { reject(err) }\r\n        else { resolve() }\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * 全てのユーザ情報を取得します。\r\n   * @returns {Promise<User[], Error>} ユーザ情報配列\r\n   */\r\n  static all() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Select = 'ALL_ATTRIBUTES';\r\n\r\n      doc.scan(params, (err, res) => {\r\n        if (err) { reject(err) }\r\n\r\n        let users = [];\r\n        if (res.Count > 0) {\r\n          users = res.Items.map((item) => { return createUser(item) });\r\n        }\r\n        resolve(users);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を取得します。\r\n   * @param {string} id - ユーザID\r\n   * @returns {Promise<User, Error>} ユーザ情報\r\n   */\r\n  static find(id) {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Key = {id};\r\n\r\n      doc.getItem(params, (err, data) => {\r\n        if (err) { reject(err) }\r\n\r\n        let user = data.Item ? createUser(data.Item) : null;\r\n        resolve(user);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を破棄します。\r\n   * @param {string} id - ユーザID\r\n   * @returns {Promise<Error>}\r\n   */\r\n  static destroy(id) {\r\n    return new Promise((resolve, reject) => {\r\n      User.find(id).then(user => {\r\n        let params = {};\r\n        params.TableName = TABLENAME;\r\n        params.Key = {id};\r\n\r\n        doc.deleteItem(params, (err) => {\r\n          if (err) { reject(err) }\r\n          else { resolve() }\r\n        });\r\n      }).catch(err => {\r\n        reject(err);\r\n      });\r\n    });\r\n  }\r\n}\r\n\r\nfunction createUser(item) {\r\n  let user = new User(item.id);\r\n  user.context = item.context | '';\r\n  return user;\r\n}\r\n"
   },
   {
-    "__docId__": 21,
+    "__docId__": 22,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -393,7 +445,7 @@
     }
   },
   {
-    "__docId__": 22,
+    "__docId__": 23,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -414,7 +466,7 @@
     }
   },
   {
-    "__docId__": 23,
+    "__docId__": 24,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -435,7 +487,7 @@
     }
   },
   {
-    "__docId__": 24,
+    "__docId__": 25,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -451,7 +503,7 @@
     "interface": false
   },
   {
-    "__docId__": 25,
+    "__docId__": 26,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -476,7 +528,7 @@
     "generator": false
   },
   {
-    "__docId__": 26,
+    "__docId__": 27,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -496,7 +548,7 @@
     }
   },
   {
-    "__docId__": 27,
+    "__docId__": 28,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -514,7 +566,7 @@
     }
   },
   {
-    "__docId__": 28,
+    "__docId__": 29,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -523,40 +575,21 @@
     "longname": "src/models/user.js~User#save",
     "access": null,
     "description": "ユーザ情報を保存します。",
-    "lineNumber": 28,
-    "params": [],
-    "return": {
-      "types": [
-        "*"
-      ]
-    },
-    "generator": false
-  },
-  {
-    "__docId__": 29,
-    "kind": "method",
-    "static": true,
-    "variation": null,
-    "name": "all",
-    "memberof": "src/models/user.js~User",
-    "longname": "src/models/user.js~User.all",
-    "access": null,
-    "description": "全てのユーザ情報を取得します。",
-    "lineNumber": 45,
+    "lineNumber": 29,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{User[]} ユーザ情報配列"
+        "tagValue": "{Promise<Error>}"
       }
     ],
     "params": [],
     "return": {
       "nullable": null,
       "types": [
-        "User[]"
+        "Promise<Error>"
       ],
       "spread": false,
-      "description": "ユーザ情報配列"
+      "description": ""
     },
     "generator": false
   },
@@ -565,16 +598,44 @@
     "kind": "method",
     "static": true,
     "variation": null,
+    "name": "all",
+    "memberof": "src/models/user.js~User",
+    "longname": "src/models/user.js~User.all",
+    "access": null,
+    "description": "全てのユーザ情報を取得します。",
+    "lineNumber": 46,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<User[], Error>} ユーザ情報配列"
+      }
+    ],
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<User[], Error>"
+      ],
+      "spread": false,
+      "description": "ユーザ情報配列"
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 31,
+    "kind": "method",
+    "static": true,
+    "variation": null,
     "name": "find",
     "memberof": "src/models/user.js~User",
     "longname": "src/models/user.js~User.find",
     "access": null,
     "description": "ユーザ情報を取得します。",
-    "lineNumber": 68,
+    "lineNumber": 69,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{User} ユーザ情報"
+        "tagValue": "{Promise<User, Error>} ユーザ情報"
       }
     ],
     "params": [
@@ -592,7 +653,7 @@
     "return": {
       "nullable": null,
       "types": [
-        "User"
+        "Promise<User, Error>"
       ],
       "spread": false,
       "description": "ユーザ情報"
@@ -600,7 +661,7 @@
     "generator": false
   },
   {
-    "__docId__": 31,
+    "__docId__": 32,
     "kind": "method",
     "static": true,
     "variation": null,
@@ -609,7 +670,13 @@
     "longname": "src/models/user.js~User.destroy",
     "access": null,
     "description": "ユーザ情報を破棄します。",
-    "lineNumber": 87,
+    "lineNumber": 89,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<Error>}"
+      }
+    ],
     "params": [
       {
         "nullable": null,
@@ -623,14 +690,17 @@
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Promise<Error>"
+      ],
+      "spread": false,
+      "description": ""
     },
     "generator": false
   },
   {
-    "__docId__": 32,
+    "__docId__": 33,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -642,7 +712,7 @@
     "importPath": "koko-bot/src/models/user.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 105,
+    "lineNumber": 107,
     "undocument": true,
     "params": [
       {
@@ -660,7 +730,7 @@
     "generator": false
   },
   {
-    "__docId__": 34,
+    "__docId__": 35,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -673,7 +743,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 35,
+    "__docId__": 36,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -686,7 +756,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 36,
+    "__docId__": 37,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -699,7 +769,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 37,
+    "__docId__": 38,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -712,7 +782,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 38,
+    "__docId__": 39,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -725,7 +795,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 39,
+    "__docId__": 40,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -738,7 +808,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 40,
+    "__docId__": 41,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -751,7 +821,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 41,
+    "__docId__": 42,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -764,7 +834,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 42,
+    "__docId__": 43,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -777,7 +847,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 43,
+    "__docId__": 44,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -790,7 +860,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 44,
+    "__docId__": 45,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -803,7 +873,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 45,
+    "__docId__": 46,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -816,7 +886,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 46,
+    "__docId__": 47,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -829,7 +899,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 47,
+    "__docId__": 48,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -842,7 +912,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 48,
+    "__docId__": 49,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -855,7 +925,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 49,
+    "__docId__": 50,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -868,7 +938,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 50,
+    "__docId__": 51,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -881,7 +951,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 51,
+    "__docId__": 52,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -894,7 +964,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 52,
+    "__docId__": 53,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -907,7 +977,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 53,
+    "__docId__": 54,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -920,7 +990,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 54,
+    "__docId__": 55,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -933,7 +1003,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 55,
+    "__docId__": 56,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -946,7 +1016,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 56,
+    "__docId__": 57,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -959,7 +1029,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 57,
+    "__docId__": 58,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -972,7 +1042,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 58,
+    "__docId__": 59,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -985,7 +1055,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 59,
+    "__docId__": 60,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -998,7 +1068,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 60,
+    "__docId__": 61,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1011,7 +1081,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 61,
+    "__docId__": 62,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1024,7 +1094,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 62,
+    "__docId__": 63,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1037,7 +1107,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 63,
+    "__docId__": 64,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1050,7 +1120,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 65,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1063,7 +1133,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 65,
+    "__docId__": 66,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1076,7 +1146,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 66,
+    "__docId__": 67,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1089,7 +1159,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 67,
+    "__docId__": 68,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1102,7 +1172,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 68,
+    "__docId__": 69,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1115,7 +1185,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 69,
+    "__docId__": 70,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1128,7 +1198,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 70,
+    "__docId__": 71,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1141,7 +1211,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 71,
+    "__docId__": 72,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1154,7 +1224,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 72,
+    "__docId__": 73,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1167,7 +1237,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 73,
+    "__docId__": 74,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1180,7 +1250,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 74,
+    "__docId__": 75,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1193,7 +1263,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 75,
+    "__docId__": 76,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1206,7 +1276,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 76,
+    "__docId__": 77,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1219,7 +1289,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 77,
+    "__docId__": 78,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1232,7 +1302,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 78,
+    "__docId__": 79,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1245,7 +1315,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 80,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1258,7 +1328,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 80,
+    "__docId__": 81,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1271,7 +1341,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 83,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1284,7 +1354,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 83,
+    "__docId__": 84,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1297,7 +1367,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 84,
+    "__docId__": 85,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1310,7 +1380,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 85,
+    "__docId__": 86,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1323,7 +1393,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 86,
+    "__docId__": 87,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1336,7 +1406,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 87,
+    "__docId__": 88,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1349,7 +1419,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 88,
+    "__docId__": 89,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1362,7 +1432,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 89,
+    "__docId__": 90,
     "kind": "external",
     "static": true,
     "variation": null,
