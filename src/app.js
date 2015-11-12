@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Twit from 'twit';
+import thunkify from 'thunkify';
 
 /**
  * Bot本体の動作を定義するクラスです。
@@ -17,7 +18,7 @@ export class Bot {
 
   /**
    * ボットを起動します。
-   * このとき、'./action'フォルダ内にある全jsのクラスが持つstart()メソッドをコールします。
+   * このとき、'./action'フォルダ内にある全jsのstart()メソッドをコールします。
    */
   start() {
     const DIRECTORY = 'actions';
@@ -31,7 +32,7 @@ export class Bot {
       }).map(file => {
         return `./${DIRECTORY}/${file}`;
       }).forEach(action => {
-        require(action).start(this.adapter);
+        require(action)(this.adapter);
       });
     });
 
@@ -51,6 +52,7 @@ export default function koko() {
     access_token_secret: process.env.BOT_TWITTER_TOKEN_SECRET
   });
 
+  twitter.post = thunkify(twitter.post);
   let koko = new Bot({
     api: twitter,
     id: process.env.BOT_TWITTER_ID

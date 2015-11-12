@@ -1,36 +1,46 @@
-import req from 'request';
-let request = req.defaults({strictSSL: false});
+import co from 'co';
+import req from 'co-request';
+import User from '../models/user';
 
 const DOCOMO_API = "https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY="
 const DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;
 
-export default class DMDialog {
-  static start(adapter) {
-    let api = adapter.api;
-    let stream = api.stream('user');
+export default function start(adapter) {
+  let api = adapter.api;
+  let stream = api.stream('user');
 
-    let status = {};
-    stream.on('direct_message', (data) => {
-      let message = data.direct_message;
+  stream.on('direct_message', rcv => {
+    let message = rcv.direct_message;
+    let sender_id = message.sender_id_str;
 
-      if (message.sender_id_str === adapter.id) return;
+    co(function *() {
+      if (sender_id === adapter.id) return;
 
-      status.utt = message.text;
-      status.nickname = message.sender_screen_name;
+      let foundUser = yield User.find(sender_id);
+      let user = foundUser ? foundUser : new User(sender_id);
+      let result = yield postDocomoDialog(user, message);
 
-      let param = {body: JSON.stringify(status)};
-      request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param, (err, res, data) => {
-        let body = JSON.parse(data);
-        let reply = {
-          user_id: message.sender_id_str,
-          text: body.utt
-        };
+      let body = JSON.parse(result);
+      user.context = body.context;
+      yield user.save();
 
-        status.context = body.context;
-        status.mode = body.mode;
-
-        api.post('direct_messages/new', reply, (err, data, res) => {});
-      });
+      let reply = { user_id: sender_id, text: body.utt };
+      yield api.post('direct_messages/new', reply);
+    }).catch(err => {
+      console.log(err);
     });
-  }
+  });
+}
+
+function *postDocomoDialog(user, message) {
+  let status = {}
+  status.utt = message.text;
+  status.nickname = message.sender_screen_name;
+  if (user.context) status.context = user.context;
+
+  let request = req.defaults({strictSSL: false});
+  let param = {body: JSON.stringify(status)};
+  let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);
+
+  return result.body;
 }

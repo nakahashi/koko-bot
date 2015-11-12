@@ -1,10 +1,11 @@
-export default class Hello {
-  static start(adapter) {
+import co from 'co';
+
+export default function start(adapter) {
+  co(function *() {
     let api = adapter.api;
     let param = {status: 'hello world!'};
-
-    api.post('statuses/update', param, (err, data, response) => {
-      console.log(data);
-    });
-  }
+    yield api.post('statuses/update', param);
+  }).catch(err => {
+    console.log(err);
+  });
 }

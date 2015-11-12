@@ -106,6 +106,7 @@ export default class User {
 
 function createUser(item) {
   let user = new User(item.id);
-  user.context = item.context | '';
+  if (item.context) user.context = item.context;
+
   return user;
 }

@@ -34,24 +34,25 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/app.js~Bot.html">Bot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-koko">koko</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/dm-dialog.js~DMDialog.html">DMDialog</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/favoreturn.js~Favoreturn.html">Favoreturn</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/hello.js~Hello.html">Hello</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">models</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/models/user.js~User.html">User</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/actions/hello.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">export default class Hello {
-  static start(adapter) {
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import co from &apos;co&apos;;
+
+export default function start(adapter) {
+  co(function *() {
     let api = adapter.api;
     let param = {status: &apos;hello world!&apos;};
-
-    api.post(&apos;statuses/update&apos;, param, (err, data, response) =&gt; {
-      console.log(data);
-    });
-  }
+    yield api.post(&apos;statuses/update&apos;, param);
+  }).catch(err =&gt; {
+    console.log(err);
+  });
 }
 </code></pre>
 

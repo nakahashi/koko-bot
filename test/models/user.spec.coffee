@@ -8,7 +8,7 @@ describe 'models/user', ->
   users = null
   newid = ''
 
-  after ->
+  before ->
     users = yield User.all()
     for user in users
       yield User.destroy(user.id)

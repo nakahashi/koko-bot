@@ -6,24 +6,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "koko-bot/src/actions/dm-dialog.js~dmdialog",
-    "class/src/actions/dm-dialog.js~DMDialog.html",
-    "<span>DMDialog</span> <span class=\"search-result-import-path\">koko-bot/src/actions/dm-dialog.js</span>",
-    "class"
-  ],
-  [
-    "koko-bot/src/actions/favoreturn.js~favoreturn",
-    "class/src/actions/favoreturn.js~Favoreturn.html",
-    "<span>Favoreturn</span> <span class=\"search-result-import-path\">koko-bot/src/actions/favoreturn.js</span>",
-    "class"
-  ],
-  [
-    "koko-bot/src/actions/hello.js~hello",
-    "class/src/actions/hello.js~Hello.html",
-    "<span>Hello</span> <span class=\"search-result-import-path\">koko-bot/src/actions/hello.js</span>",
-    "class"
-  ],
-  [
     "koko-bot/src/models/user.js~user",
     "class/src/models/user.js~User.html",
     "<span>User</span> <span class=\"search-result-import-path\">koko-bot/src/models/user.js</span>",
@@ -33,6 +15,24 @@ window.esdocSearchIndex = [
     "koko-bot~koko",
     "function/index.html#static-function-koko",
     "<span>koko</span> <span class=\"search-result-import-path\">koko-bot</span>",
+    "function"
+  ],
+  [
+    "koko-bot/src/actions/dm-dialog.js~start",
+    "function/index.html#static-function-start",
+    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/dm-dialog.js</span>",
+    "function"
+  ],
+  [
+    "koko-bot/src/actions/favoreturn.js~start",
+    "function/index.html#static-function-start",
+    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/favoreturn.js</span>",
+    "function"
+  ],
+  [
+    "koko-bot/src/actions/hello.js~start",
+    "function/index.html#static-function-start",
+    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/hello.js</span>",
     "function"
   ],
   [
@@ -372,34 +372,16 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/actions/dm-dialog.js~dmdialog.start",
-    "class/src/actions/dm-dialog.js~DMDialog.html#static-method-start",
-    "src/actions/dm-dialog.js~DMDialog.start",
-    "method"
-  ],
-  [
     "src/actions/favoreturn.js",
     "file/src/actions/favoreturn.js.html",
     "src/actions/favoreturn.js",
     "file"
   ],
   [
-    "src/actions/favoreturn.js~favoreturn.start",
-    "class/src/actions/favoreturn.js~Favoreturn.html#static-method-start",
-    "src/actions/favoreturn.js~Favoreturn.start",
-    "method"
-  ],
-  [
     "src/actions/hello.js",
     "file/src/actions/hello.js.html",
     "src/actions/hello.js",
     "file"
-  ],
-  [
-    "src/actions/hello.js~hello.start",
-    "class/src/actions/hello.js~Hello.html#static-method-start",
-    "src/actions/hello.js~Hello.start",
-    "method"
   ],
   [
     "src/app.js",

@@ -34,9 +34,9 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/app.js~Bot.html">Bot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-koko">koko</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/dm-dialog.js~DMDialog.html">DMDialog</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/favoreturn.js~Favoreturn.html">Favoreturn</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/actions/hello.js~Hello.html">Hello</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">actions</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-start">start</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">models</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/models/user.js~User.html">User</a></span></span></li>
 </ul>
 </div>
@@ -151,7 +151,8 @@ export default class User {
 
 function createUser(item) {
   let user = new User(item.id);
-  user.context = item.context | &apos;&apos;;
+  if (item.context) user.context = item.context;
+
   return user;
 }
 </code></pre>
