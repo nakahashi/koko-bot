@@ -20,11 +20,10 @@ export default function start(adapter) {
       let user = foundUser ? foundUser : new User(sender_id);
       let result = yield postDocomoDialog(user, message);
 
-      let body = JSON.parse(result);
-      user.context = body.context;
+      user.context = result.context;
       yield user.save();
 
-      let reply = { user_id: sender_id, text: body.utt };
+      let reply = { user_id: sender_id, text: result.utt };
       yield api.post('direct_messages/new', reply);
     }).catch(err => {
       console.log(err);
@@ -42,5 +41,5 @@ function *postDocomoDialog(user, message) {
   let param = {body: JSON.stringify(status)};
   let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);
 
-  return result.body;
+  return JSON.parse(result.body);
 }
