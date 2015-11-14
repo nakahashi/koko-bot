@@ -36,6 +36,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "koko-bot/src/actions/news.js~start",
+    "function/index.html#static-function-start",
+    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/news.js</span>",
+    "function"
+  ],
+  [
     "builtinexternal/ecmascriptexternal.js~array",
     "external/index.html",
     "BuiltinExternal/ECMAScriptExternal.js~Array",
@@ -381,6 +387,12 @@ window.esdocSearchIndex = [
     "src/actions/hello.js",
     "file/src/actions/hello.js.html",
     "src/actions/hello.js",
+    "file"
+  ],
+  [
+    "src/actions/news.js",
+    "file/src/actions/news.js.html",
+    "src/actions/news.js",
     "file"
   ],
   [
