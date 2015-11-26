@@ -1,6 +1,6 @@
 {
-  "coverage": "64.7%",
-  "expectCount": 17,
+  "coverage": "68.75%",
+  "expectCount": 16,
   "actualCount": 11,
   "files": {
     "src/app.js": {
@@ -17,6 +17,13 @@
         22
       ]
     },
+    "src/actions/dm-dialog.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        8
+      ]
+    },
     "src/actions/favoreturn.js": {
       "expectCount": 1,
       "actualCount": 0,
@@ -29,20 +36,6 @@
       "actualCount": 0,
       "undocumentLines": [
         9
-      ]
-    },
-    "src/actions/hello.js": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        3
-      ]
-    },
-    "src/actions/dm-dialog.js": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        8
       ]
     }
   }

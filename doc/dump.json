@@ -10,7 +10,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import co from 'co';\r\nimport req from 'co-request';\r\nimport User from '../models/user';\r\n\r\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\r\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\r\n\r\nexport default function start(adapter) {\r\n  let api = adapter.api;\r\n  let stream = api.stream('user');\r\n\r\n  stream.on('direct_message', rcv => {\r\n    let message = rcv.direct_message;\r\n    let sender_id = message.sender_id_str;\r\n\r\n    co(function *() {\r\n      if (sender_id === adapter.id) return;\r\n\r\n      let foundUser = yield User.find(sender_id);\r\n      let user = foundUser ? foundUser : new User(sender_id);\r\n      let result = yield postDocomoDialog(user, message);\r\n\r\n      user.context = result.context;\r\n      yield user.save();\r\n\r\n      let reply = { user_id: sender_id, text: result.utt };\r\n      yield api.post('direct_messages/new', reply);\r\n    }).catch(err => {\r\n      console.log(err);\r\n    });\r\n  });\r\n}\r\n\r\nfunction *postDocomoDialog(user, message) {\r\n  let status = {}\r\n  status.utt = message.text;\r\n  status.nickname = message.sender_screen_name;\r\n  if (user.context) status.context = user.context;\r\n\r\n  let request = req.defaults({strictSSL: false});\r\n  let param = {body: JSON.stringify(status)};\r\n  let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);\r\n\r\n  return JSON.parse(result.body);\r\n}\r\n"
+    "content": "import co from 'co';\nimport req from 'co-request';\nimport User from '../models/user';\n\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\n\nexport default function dmDialog(adapter) {\n  let api = adapter.api;\n  let stream = api.stream('user');\n\n  stream.on('direct_message', rcv => {\n    let message = rcv.direct_message;\n    let sender_id = message.sender_id_str;\n\n    co(function *() {\n      if (sender_id === adapter.id) return;\n\n      let foundUser = yield User.find(sender_id);\n      let user = foundUser ? foundUser : new User(sender_id);\n      let result = yield postDocomoDialog(user, message);\n\n      user.context = result.context;\n      yield user.save();\n\n      let reply = { user_id: sender_id, text: result.utt };\n      yield api.post('direct_messages/new', reply);\n    }).catch(err => {\n      console.log(err);\n    });\n  });\n}\n\nfunction *postDocomoDialog(user, message) {\n  let status = {}\n  status.utt = message.text;\n  status.nickname = message.sender_screen_name;\n  if (user.context) status.context = user.context;\n\n  let request = req.defaults({strictSSL: false});\n  let param = {body: JSON.stringify(status)};\n  let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);\n\n  return JSON.parse(result.body);\n}\n"
   },
   {
     "__docId__": 1,
@@ -59,13 +59,13 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "start",
+    "name": "dmDialog",
     "memberof": "src/actions/dm-dialog.js",
-    "longname": "src/actions/dm-dialog.js~start",
+    "longname": "src/actions/dm-dialog.js~dmDialog",
     "access": null,
     "export": true,
     "importPath": "koko-bot/src/actions/dm-dialog.js",
-    "importStyle": "start",
+    "importStyle": "dmDialog",
     "description": null,
     "lineNumber": 8,
     "undocument": true,
@@ -126,20 +126,20 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import co from 'co';\r\n\r\nexport default function start(adapter) {\r\n  let api = adapter.api;\r\n  let stream = api.stream('user');\r\n\r\n  stream.on('follow', (data) => {\r\n    co(function *() {\r\n      if (data.source.id_str === adapter.id) return;\r\n      let param = {user_id: data.source.id_str};\r\n      yield api.post('friendships/create', param);\r\n    }).catch(err => {\r\n      console.log(err);\r\n    });\r\n  });\r\n}\r\n"
+    "content": "import co from 'co';\n\nexport default function favoreturn(adapter) {\n  let api = adapter.api;\n  let stream = api.stream('user');\n\n  stream.on('follow', (data) => {\n    co(function *() {\n      if (data.source.id_str === adapter.id) return;\n      let param = {user_id: data.source.id_str};\n      yield api.post('friendships/create', param);\n    }).catch(err => {\n      console.log(err);\n    });\n  });\n}\n"
   },
   {
     "__docId__": 6,
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "start",
+    "name": "favoreturn",
     "memberof": "src/actions/favoreturn.js",
-    "longname": "src/actions/favoreturn.js~start",
+    "longname": "src/actions/favoreturn.js~favoreturn",
     "access": null,
     "export": true,
     "importPath": "koko-bot/src/actions/favoreturn.js",
-    "importStyle": "start",
+    "importStyle": "favoreturn",
     "description": null,
     "lineNumber": 3,
     "undocument": true,
@@ -158,54 +158,16 @@
     "kind": "file",
     "static": true,
     "variation": null,
-    "name": "src/actions/hello.js",
-    "memberof": null,
-    "longname": "src/actions/hello.js",
-    "access": null,
-    "description": null,
-    "lineNumber": 1,
-    "content": "import co from 'co';\r\n\r\nexport default function start(adapter) {\r\n  co(function *() {\r\n    let api = adapter.api;\r\n    let param = {status: 'hello world!'};\r\n    yield api.post('statuses/update', param);\r\n  }).catch(err => {\r\n    console.log(err);\r\n  });\r\n}\r\n"
-  },
-  {
-    "__docId__": 8,
-    "kind": "function",
-    "static": true,
-    "variation": null,
-    "name": "start",
-    "memberof": "src/actions/hello.js",
-    "longname": "src/actions/hello.js~start",
-    "access": null,
-    "export": true,
-    "importPath": "koko-bot/src/actions/hello.js",
-    "importStyle": "start",
-    "description": null,
-    "lineNumber": 3,
-    "undocument": true,
-    "params": [
-      {
-        "name": "adapter",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "generator": false
-  },
-  {
-    "__docId__": 9,
-    "kind": "file",
-    "static": true,
-    "variation": null,
     "name": "src/actions/news.js",
     "memberof": null,
     "longname": "src/actions/news.js",
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import Request from 'request';\r\nimport req from 'co-request';\r\nimport FeedParser from 'feedparser';\r\nimport co from 'co';\r\n\r\nconst MINUTE = 1000 * 60;\r\nconst HOUR = MINUTE * 60;\r\n\r\nexport default function start(adapter) {\r\n  setInterval(() => {\r\n    co(function *() {\r\n      let news = yield fetchNews();\r\n      news.title = removeNoiseFromTitle(news.title)\r\n      let comment = yield fetchComment(news.title);\r\n\r\n      let status = `${comment.utt}\\n${news.title} ${news.link}`\r\n      yield adapter.api.post('statuses/update', {status});\r\n    }).catch(err => {\r\n      console.log(err);\r\n    });\r\n  }, 4 * HOUR);\r\n}\r\n\r\nfunction removeNoiseFromTitle(title){\r\n  let result = title;\r\n\r\n  let matchies = title.match(/（.*?\\）/g);\r\n  if (matchies) {\r\n    result = title.replace(matchies.pop(), '');\r\n  }\r\n\r\n  result.replace('<', '');\r\n\r\n  return result;\r\n}\r\n\r\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\r\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\r\n\r\nfunction *fetchComment(utt) {\r\n  let status = {utt, sex:'女'};\r\n\r\n  let request = req.defaults({strictSSL: false});\r\n  let param = {body: JSON.stringify(status)};\r\n  let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);\r\n\r\n  return JSON.parse(result.body);\r\n}\r\n\r\nconst SPA = 'http://zasshi.news.yahoo.co.jp/rss/sspa-all.xml';\r\nconst R25 = 'http://zasshi.news.yahoo.co.jp/rss/rnijugo-all.xml'\r\nconst SPONITCHI = 'http://headlines.yahoo.co.jp/rss/spnannex-c_spo.xml'\r\nconst RSSs = [SPA, R25, SPONITCHI];\r\nconst LINK_LIMIT = 20;\r\nconst HISTORY_NUM = 100;\r\n\r\nlet history = [];\r\nlet rssIndex = 0;\r\n\r\nfunction *fetchNews() {\r\n  let items = yield fetchRss(RSSs[rssIndex], LINK_LIMIT);\r\n  let item = items.find((ss) => {\r\n    return (-1 === history.indexOf(ss.link));\r\n  });\r\n\r\n  history.push(item.link);\r\n  if (history.length > HISTORY_NUM) history.shift();\r\n\r\n  rssIndex++;\r\n  if (rssIndex >= RSSs.length) rssIndex = 0;\r\n\r\n  let news = {title: item.title, link: item.link};\r\n  return news;\r\n}\r\n\r\nfunction fetchRss(url, limit) {\r\n  let request = Request(url);\r\n  let feedparser = new FeedParser({addmeta: false});\r\n  let items = [];\r\n\r\n  return new Promise((resolve, reject) => {\r\n    request.on('error', (err) => {\r\n      reject(err);\r\n    });\r\n    request.on('response', (res) => {\r\n      if (res.statusCode != 200) reject(new Error('Bad status code'));\r\n\r\n      request.pipe(feedparser);\r\n    });\r\n\r\n    feedparser.on('error', (err) => {\r\n      reject(err);\r\n    });\r\n    feedparser.on('readable', () => {\r\n      let item;\r\n      while (item = feedparser.read()) {\r\n        items.push(item);\r\n        if (items.length > limit) items.shift();\r\n      }\r\n    });\r\n    feedparser.on('end', () => {\r\n      resolve(items);\r\n    });\r\n  });\r\n}\r\n"
+    "content": "import Request from 'request';\nimport req from 'co-request';\nimport FeedParser from 'feedparser';\nimport co from 'co';\n\nconst MINUTE = 1000 * 60;\nconst HOUR = MINUTE * 60;\n\nexport default function news(adapter) {\n  setInterval(() => {\n    co(function *() {\n      let news = yield fetchNews();\n      news.title = removeNoiseFromTitle(news.title)\n      let comment = yield fetchComment(news.title);\n\n      let status = `${comment.utt}\\n${news.title} ${news.link}`\n      yield adapter.api.post('statuses/update', {status});\n    }).catch(err => {\n      console.log(err);\n    });\n  }, 4 * HOUR);\n}\n\nfunction removeNoiseFromTitle(title){\n  let result = title;\n\n  let matchies = title.match(/（.*?\\）/g);\n  if (matchies) {\n    result = title.replace(matchies.pop(), '');\n  }\n\n  result.replace('<', '');\n\n  return result;\n}\n\nconst DOCOMO_API = \"https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY=\"\nconst DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;\n\nfunction *fetchComment(utt) {\n  let status = {utt, sex:'女'};\n\n  let request = req.defaults({strictSSL: false});\n  let param = {body: JSON.stringify(status)};\n  let result = yield request.post(`${DOCOMO_API}${DOCOMO_TOKEN}`, param);\n\n  return JSON.parse(result.body);\n}\n\nconst SPA = 'http://zasshi.news.yahoo.co.jp/rss/sspa-all.xml';\nconst R25 = 'http://zasshi.news.yahoo.co.jp/rss/rnijugo-all.xml'\nconst SPONITCHI = 'http://headlines.yahoo.co.jp/rss/spnannex-c_spo.xml'\nconst RSSs = [SPA, R25, SPONITCHI];\nconst LINK_LIMIT = 20;\nconst HISTORY_NUM = 100;\n\nlet history = [];\nlet rssIndex = 0;\n\nfunction *fetchNews() {\n  let items = yield fetchRss(RSSs[rssIndex], LINK_LIMIT);\n  let item = items.find((ss) => {\n    return (-1 === history.indexOf(ss.link));\n  });\n\n  history.push(item.link);\n  if (history.length > HISTORY_NUM) history.shift();\n\n  rssIndex++;\n  if (rssIndex >= RSSs.length) rssIndex = 0;\n\n  let news = {title: item.title, link: item.link};\n  return news;\n}\n\nfunction fetchRss(url, limit) {\n  let request = Request(url);\n  let feedparser = new FeedParser({addmeta: false});\n  let items = [];\n\n  return new Promise((resolve, reject) => {\n    request.on('error', (err) => {\n      reject(err);\n    });\n    request.on('response', (res) => {\n      if (res.statusCode != 200) reject(new Error('Bad status code'));\n\n      request.pipe(feedparser);\n    });\n\n    feedparser.on('error', (err) => {\n      reject(err);\n    });\n    feedparser.on('readable', () => {\n      let item;\n      while (item = feedparser.read()) {\n        items.push(item);\n        if (items.length > limit) items.shift();\n      }\n    });\n    feedparser.on('end', () => {\n      resolve(items);\n    });\n  });\n}\n"
   },
   {
-    "__docId__": 10,
+    "__docId__": 8,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -226,7 +188,7 @@
     }
   },
   {
-    "__docId__": 11,
+    "__docId__": 9,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -247,17 +209,17 @@
     }
   },
   {
-    "__docId__": 12,
+    "__docId__": 10,
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "start",
+    "name": "news",
     "memberof": "src/actions/news.js",
-    "longname": "src/actions/news.js~start",
+    "longname": "src/actions/news.js~news",
     "access": null,
     "export": true,
     "importPath": "koko-bot/src/actions/news.js",
-    "importStyle": "start",
+    "importStyle": "news",
     "description": null,
     "lineNumber": 9,
     "undocument": true,
@@ -272,7 +234,7 @@
     "generator": false
   },
   {
-    "__docId__": 13,
+    "__docId__": 11,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -302,7 +264,7 @@
     "generator": false
   },
   {
-    "__docId__": 14,
+    "__docId__": 12,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -323,7 +285,7 @@
     }
   },
   {
-    "__docId__": 15,
+    "__docId__": 13,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -344,7 +306,7 @@
     }
   },
   {
-    "__docId__": 16,
+    "__docId__": 14,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -374,7 +336,7 @@
     "generator": true
   },
   {
-    "__docId__": 17,
+    "__docId__": 15,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -395,7 +357,7 @@
     }
   },
   {
-    "__docId__": 18,
+    "__docId__": 16,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -416,7 +378,7 @@
     }
   },
   {
-    "__docId__": 19,
+    "__docId__": 17,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -437,7 +399,7 @@
     }
   },
   {
-    "__docId__": 20,
+    "__docId__": 18,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -458,7 +420,7 @@
     }
   },
   {
-    "__docId__": 21,
+    "__docId__": 19,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -479,7 +441,7 @@
     }
   },
   {
-    "__docId__": 22,
+    "__docId__": 20,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -500,7 +462,7 @@
     }
   },
   {
-    "__docId__": 23,
+    "__docId__": 21,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -521,7 +483,7 @@
     }
   },
   {
-    "__docId__": 24,
+    "__docId__": 22,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -542,7 +504,7 @@
     }
   },
   {
-    "__docId__": 25,
+    "__docId__": 23,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -565,7 +527,7 @@
     "generator": true
   },
   {
-    "__docId__": 26,
+    "__docId__": 24,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -601,7 +563,7 @@
     "generator": false
   },
   {
-    "__docId__": 27,
+    "__docId__": 25,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -611,10 +573,10 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import fs from 'fs';\r\nimport path from 'path';\r\nimport Twit from 'twit';\r\nimport thunkify from 'thunkify';\r\n\r\n/**\r\n * Bot本体の動作を定義するクラスです。\r\n */\r\nexport class Bot {\r\n  /**\r\n   * @param {Object} adapter - ボットが動作するサービスとのアダプタ\r\n   * @param {Twit} adapter.api - サービスとのAPIの実装（当面Twitのインスタンス）\r\n   * @param {string} adapter.id - サービス上のID\r\n   */\r\n  constructor(adapter) {\r\n    this.adapter = adapter;\r\n  }\r\n\r\n  /**\r\n   * ボットを起動します。\r\n   * このとき、'./action'フォルダ内にある全jsのstart()メソッドをコールします。\r\n   */\r\n  start() {\r\n    const DIRECTORY = 'actions';\r\n    const EXT = '.js';\r\n\r\n    fs.readdir(`${__dirname}/${DIRECTORY}`, (err, files) => {\r\n      if (err) throw err;\r\n\r\n      files.filter(file => {\r\n        return path.extname(file) === EXT;\r\n      }).map(file => {\r\n        return `./${DIRECTORY}/${file}`;\r\n      }).forEach(action => {\r\n        require(action)(this.adapter);\r\n      });\r\n    });\r\n\r\n    console.log('bot start!');\r\n  }\r\n}\r\n\r\n/**\r\n * Twitterに接続したBotインスタンスを生成します。\r\n * @returns {Bot}\r\n */\r\nexport default function koko() {\r\n  let twitter = new Twit({\r\n    consumer_key: process.env.BOT_TWITTER_KEY,\r\n    consumer_secret: process.env.BOT_TWITTER_SECRET,\r\n    access_token: process.env.BOT_TWITTER_TOKEN,\r\n    access_token_secret: process.env.BOT_TWITTER_TOKEN_SECRET\r\n  });\r\n\r\n  twitter.post = thunkify(twitter.post);\r\n  let koko = new Bot({\r\n    api: twitter,\r\n    id: process.env.BOT_TWITTER_ID\r\n  });\r\n\r\n  return koko;\r\n}\r\n"
+    "content": "import fs from 'fs';\nimport path from 'path';\nimport Twit from 'twit';\nimport thunkify from 'thunkify';\n\n/**\n * Bot本体の動作を定義するクラスです。\n */\nexport class Bot {\n  /**\n   * @param {Object} adapter - ボットが動作するサービスとのアダプタ\n   * @param {Twit} adapter.api - サービスとのAPIの実装（当面Twitのインスタンス）\n   * @param {string} adapter.id - サービス上のID\n   */\n  constructor(adapter) {\n    this.adapter = adapter;\n  }\n\n  /**\n   * ボットを起動します。\n   * このとき、'./action'フォルダ内にある全jsのstart()メソッドをコールします。\n   */\n  start() {\n    const DIRECTORY = 'actions';\n    const EXT = '.js';\n\n    fs.readdir(`${__dirname}/${DIRECTORY}`, (err, files) => {\n      if (err) throw err;\n\n      files.filter(file => {\n        return path.extname(file) === EXT;\n      }).map(file => {\n        return `./${DIRECTORY}/${file}`;\n      }).forEach(action => {\n        require(action)(this.adapter);\n      });\n    });\n\n    console.log('bot start!');\n  }\n}\n\n/**\n * Twitterに接続したBotインスタンスを生成します。\n * @returns {Bot}\n */\nexport default function koko() {\n  let twitter = new Twit({\n    consumer_key: process.env.BOT_TWITTER_KEY,\n    consumer_secret: process.env.BOT_TWITTER_SECRET,\n    access_token: process.env.BOT_TWITTER_TOKEN,\n    access_token_secret: process.env.BOT_TWITTER_TOKEN_SECRET\n  });\n\n  twitter.post = thunkify(twitter.post);\n  let koko = new Bot({\n    api: twitter,\n    id: process.env.BOT_TWITTER_ID\n  });\n\n  return koko;\n}\n"
   },
   {
-    "__docId__": 28,
+    "__docId__": 26,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -630,7 +592,7 @@
     "interface": false
   },
   {
-    "__docId__": 29,
+    "__docId__": 27,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -675,7 +637,7 @@
     "generator": false
   },
   {
-    "__docId__": 30,
+    "__docId__": 28,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -693,7 +655,7 @@
     }
   },
   {
-    "__docId__": 31,
+    "__docId__": 29,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -707,7 +669,7 @@
     "generator": false
   },
   {
-    "__docId__": 32,
+    "__docId__": 30,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -738,7 +700,7 @@
     "generator": false
   },
   {
-    "__docId__": 33,
+    "__docId__": 31,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -748,10 +710,10 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import koa from 'koa';\r\nimport route from 'koa-route'\r\nimport koko from './app';\r\n\r\nkoko().start();\r\n\r\nvar server = koa();\r\n\r\nserver.use(route.get('/', function *() {\r\n  this.body = 'hello world';\r\n}));\r\n\r\nvar port = process.env.PORT || 3000;\r\nserver.listen(port);\r\nconsole.log('listening on port : ' + port);\r\n"
+    "content": "import koa from 'koa';\nimport route from 'koa-route'\nimport koko from './app';\n\nkoko().start();\n\nvar server = koa();\n\nserver.use(route.get('/', function *() {\n  this.body = 'hello world';\n}));\n\nvar port = process.env.PORT || 3000;\nserver.listen(port);\nconsole.log('listening on port : ' + port);\n"
   },
   {
-    "__docId__": 34,
+    "__docId__": 32,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -772,7 +734,7 @@
     }
   },
   {
-    "__docId__": 35,
+    "__docId__": 33,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -793,7 +755,7 @@
     }
   },
   {
-    "__docId__": 36,
+    "__docId__": 34,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -803,10 +765,10 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import AWS from 'aws-sdk';\r\nimport DOC from 'dynamodb-doc'\r\nimport 'babel/polyfill';\r\n\r\nconst TABLENAME = 'users';\r\nconst db = new AWS.DynamoDB({ region: 'ap-northeast-1' });\r\nconst doc = new DOC.DynamoDB(db);\r\n\r\n/**\r\n * AWSのDynamoDBに格納するユーザ情報のモデルです。\r\n */\r\nexport default class User {\r\n  /**\r\n   * @param {string} id - ユーザID\r\n   */\r\n  constructor(id) {\r\n    /**\r\n    * @type {string} id\r\n    * @type {string} context\r\n     */\r\n    this.id = id;\r\n    this.context = '';\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を保存します。\r\n   * @returns {Promise<Error>}\r\n   */\r\n  save() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Item = { 'id': this.id, 'context': this.context };\r\n\r\n      doc.putItem(params, (err) => {\r\n        if (err) { reject(err) }\r\n        else { resolve() }\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * 全てのユーザ情報を取得します。\r\n   * @returns {Promise<User[], Error>} ユーザ情報配列\r\n   */\r\n  static all() {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Select = 'ALL_ATTRIBUTES';\r\n\r\n      doc.scan(params, (err, res) => {\r\n        if (err) { reject(err) }\r\n\r\n        let users = [];\r\n        if (res.Count > 0) {\r\n          users = res.Items.map((item) => { return createUser(item) });\r\n        }\r\n        resolve(users);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を取得します。\r\n   * @param {string} id - ユーザID\r\n   * @returns {Promise<User, Error>} ユーザ情報\r\n   */\r\n  static find(id) {\r\n    return new Promise((resolve, reject) => {\r\n      let params = {};\r\n      params.TableName = TABLENAME;\r\n      params.Key = {id};\r\n\r\n      doc.getItem(params, (err, data) => {\r\n        if (err) { reject(err) }\r\n\r\n        let user = data.Item ? createUser(data.Item) : null;\r\n        resolve(user);\r\n      });\r\n    });\r\n  }\r\n\r\n  /**\r\n   * ユーザ情報を破棄します。\r\n   * @param {string} id - ユーザID\r\n   * @returns {Promise<Error>}\r\n   */\r\n  static destroy(id) {\r\n    return new Promise((resolve, reject) => {\r\n      User.find(id).then(user => {\r\n        let params = {};\r\n        params.TableName = TABLENAME;\r\n        params.Key = {id};\r\n\r\n        doc.deleteItem(params, (err) => {\r\n          if (err) { reject(err) }\r\n          else { resolve() }\r\n        });\r\n      }).catch(err => {\r\n        reject(err);\r\n      });\r\n    });\r\n  }\r\n}\r\n\r\nfunction createUser(item) {\r\n  let user = new User(item.id);\r\n  if (item.context) user.context = item.context;\r\n\r\n  return user;\r\n}\r\n"
+    "content": "import AWS from 'aws-sdk';\nimport DOC from 'dynamodb-doc'\nimport 'babel/polyfill';\n\nconst TABLENAME = 'users';\nconst db = new AWS.DynamoDB({ region: 'ap-northeast-1' });\nconst doc = new DOC.DynamoDB(db);\n\n/**\n * AWSのDynamoDBに格納するユーザ情報のモデルです。\n */\nexport default class User {\n  /**\n   * @param {string} id - ユーザID\n   */\n  constructor(id) {\n    /**\n    * @type {string} id\n    * @type {string} context\n     */\n    this.id = id;\n    this.context = '';\n  }\n\n  /**\n   * ユーザ情報を保存します。\n   * @returns {Promise<Error>}\n   */\n  save() {\n    return new Promise((resolve, reject) => {\n      let params = {};\n      params.TableName = TABLENAME;\n      params.Item = { 'id': this.id, 'context': this.context };\n\n      doc.putItem(params, (err) => {\n        if (err) { reject(err) }\n        else { resolve() }\n      });\n    });\n  }\n\n  /**\n   * 全てのユーザ情報を取得します。\n   * @returns {Promise<User[], Error>} ユーザ情報配列\n   */\n  static all() {\n    return new Promise((resolve, reject) => {\n      let params = {};\n      params.TableName = TABLENAME;\n      params.Select = 'ALL_ATTRIBUTES';\n\n      doc.scan(params, (err, res) => {\n        if (err) { reject(err) }\n\n        let users = [];\n        if (res.Count > 0) {\n          users = res.Items.map((item) => { return createUser(item) });\n        }\n        resolve(users);\n      });\n    });\n  }\n\n  /**\n   * ユーザ情報を取得します。\n   * @param {string} id - ユーザID\n   * @returns {Promise<User, Error>} ユーザ情報\n   */\n  static find(id) {\n    return new Promise((resolve, reject) => {\n      let params = {};\n      params.TableName = TABLENAME;\n      params.Key = {id};\n\n      doc.getItem(params, (err, data) => {\n        if (err) { reject(err) }\n\n        let user = data.Item ? createUser(data.Item) : null;\n        resolve(user);\n      });\n    });\n  }\n\n  /**\n   * ユーザ情報を破棄します。\n   * @param {string} id - ユーザID\n   * @returns {Promise<Error>}\n   */\n  static destroy(id) {\n    return new Promise((resolve, reject) => {\n      User.find(id).then(user => {\n        let params = {};\n        params.TableName = TABLENAME;\n        params.Key = {id};\n\n        doc.deleteItem(params, (err) => {\n          if (err) { reject(err) }\n          else { resolve() }\n        });\n      }).catch(err => {\n        reject(err);\n      });\n    });\n  }\n}\n\nfunction createUser(item) {\n  let user = new User(item.id);\n  if (item.context) user.context = item.context;\n\n  return user;\n}\n"
   },
   {
-    "__docId__": 37,
+    "__docId__": 35,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -827,7 +789,7 @@
     }
   },
   {
-    "__docId__": 38,
+    "__docId__": 36,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -848,7 +810,7 @@
     }
   },
   {
-    "__docId__": 39,
+    "__docId__": 37,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -869,7 +831,7 @@
     }
   },
   {
-    "__docId__": 40,
+    "__docId__": 38,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -885,7 +847,7 @@
     "interface": false
   },
   {
-    "__docId__": 41,
+    "__docId__": 39,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -910,7 +872,7 @@
     "generator": false
   },
   {
-    "__docId__": 42,
+    "__docId__": 40,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -930,7 +892,7 @@
     }
   },
   {
-    "__docId__": 43,
+    "__docId__": 41,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -948,7 +910,7 @@
     }
   },
   {
-    "__docId__": 44,
+    "__docId__": 42,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -976,7 +938,7 @@
     "generator": false
   },
   {
-    "__docId__": 45,
+    "__docId__": 43,
     "kind": "method",
     "static": true,
     "variation": null,
@@ -1004,7 +966,7 @@
     "generator": false
   },
   {
-    "__docId__": 46,
+    "__docId__": 44,
     "kind": "method",
     "static": true,
     "variation": null,
@@ -1043,7 +1005,7 @@
     "generator": false
   },
   {
-    "__docId__": 47,
+    "__docId__": 45,
     "kind": "method",
     "static": true,
     "variation": null,
@@ -1082,7 +1044,7 @@
     "generator": false
   },
   {
-    "__docId__": 48,
+    "__docId__": 46,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1112,7 +1074,7 @@
     "generator": false
   },
   {
-    "__docId__": 50,
+    "__docId__": 48,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1125,7 +1087,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 51,
+    "__docId__": 49,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1138,7 +1100,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 52,
+    "__docId__": 50,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1151,7 +1113,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 53,
+    "__docId__": 51,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1164,7 +1126,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 54,
+    "__docId__": 52,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1177,7 +1139,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 55,
+    "__docId__": 53,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1190,7 +1152,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 56,
+    "__docId__": 54,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1203,7 +1165,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 57,
+    "__docId__": 55,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1216,7 +1178,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 58,
+    "__docId__": 56,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1229,7 +1191,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 59,
+    "__docId__": 57,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1242,7 +1204,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 60,
+    "__docId__": 58,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1255,7 +1217,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 61,
+    "__docId__": 59,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1268,7 +1230,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 62,
+    "__docId__": 60,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1281,7 +1243,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 63,
+    "__docId__": 61,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1294,7 +1256,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 62,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1307,7 +1269,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 65,
+    "__docId__": 63,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1320,7 +1282,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 66,
+    "__docId__": 64,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1333,7 +1295,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 67,
+    "__docId__": 65,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1346,7 +1308,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 68,
+    "__docId__": 66,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1359,7 +1321,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 69,
+    "__docId__": 67,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1372,7 +1334,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 70,
+    "__docId__": 68,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1385,7 +1347,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 71,
+    "__docId__": 69,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1398,7 +1360,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 72,
+    "__docId__": 70,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1411,7 +1373,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 73,
+    "__docId__": 71,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1424,7 +1386,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 74,
+    "__docId__": 72,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1437,7 +1399,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 75,
+    "__docId__": 73,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1450,7 +1412,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 76,
+    "__docId__": 74,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1463,7 +1425,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 77,
+    "__docId__": 75,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1476,7 +1438,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 78,
+    "__docId__": 76,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1489,7 +1451,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 79,
+    "__docId__": 77,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1502,7 +1464,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 80,
+    "__docId__": 78,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1515,7 +1477,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 81,
+    "__docId__": 79,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1528,7 +1490,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 82,
+    "__docId__": 80,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1541,7 +1503,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 83,
+    "__docId__": 81,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1554,7 +1516,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 84,
+    "__docId__": 82,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1567,7 +1529,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 85,
+    "__docId__": 83,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1580,7 +1542,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 86,
+    "__docId__": 84,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1593,7 +1555,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 87,
+    "__docId__": 85,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1606,7 +1568,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 88,
+    "__docId__": 86,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1619,7 +1581,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 89,
+    "__docId__": 87,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1632,7 +1594,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 90,
+    "__docId__": 88,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1645,7 +1607,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 91,
+    "__docId__": 89,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1658,7 +1620,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 92,
+    "__docId__": 90,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1671,7 +1633,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 93,
+    "__docId__": 91,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1684,7 +1646,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 94,
+    "__docId__": 92,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1697,7 +1659,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 95,
+    "__docId__": 93,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1710,7 +1672,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 96,
+    "__docId__": 94,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1723,7 +1685,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 98,
+    "__docId__": 96,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1736,7 +1698,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 99,
+    "__docId__": 97,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1749,7 +1711,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 100,
+    "__docId__": 98,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1762,7 +1724,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 101,
+    "__docId__": 99,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1775,7 +1737,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 102,
+    "__docId__": 100,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1788,7 +1750,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 103,
+    "__docId__": 101,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1801,7 +1763,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 104,
+    "__docId__": 102,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1814,7 +1776,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 103,
     "kind": "external",
     "static": true,
     "variation": null,

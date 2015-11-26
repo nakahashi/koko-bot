@@ -1,6 +1,6 @@
 import co from 'co';
 
-export default function start(adapter) {
+export default function favoreturn(adapter) {
   let api = adapter.api;
   let stream = api.stream('user');
 

@@ -12,33 +12,27 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "koko-bot/src/actions/dm-dialog.js~dmdialog",
+    "function/index.html#static-function-dmDialog",
+    "<span>dmDialog</span> <span class=\"search-result-import-path\">koko-bot/src/actions/dm-dialog.js</span>",
+    "function"
+  ],
+  [
+    "koko-bot/src/actions/favoreturn.js~favoreturn",
+    "function/index.html#static-function-favoreturn",
+    "<span>favoreturn</span> <span class=\"search-result-import-path\">koko-bot/src/actions/favoreturn.js</span>",
+    "function"
+  ],
+  [
     "koko-bot~koko",
     "function/index.html#static-function-koko",
     "<span>koko</span> <span class=\"search-result-import-path\">koko-bot</span>",
     "function"
   ],
   [
-    "koko-bot/src/actions/dm-dialog.js~start",
-    "function/index.html#static-function-start",
-    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/dm-dialog.js</span>",
-    "function"
-  ],
-  [
-    "koko-bot/src/actions/favoreturn.js~start",
-    "function/index.html#static-function-start",
-    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/favoreturn.js</span>",
-    "function"
-  ],
-  [
-    "koko-bot/src/actions/hello.js~start",
-    "function/index.html#static-function-start",
-    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/hello.js</span>",
-    "function"
-  ],
-  [
-    "koko-bot/src/actions/news.js~start",
-    "function/index.html#static-function-start",
-    "<span>start</span> <span class=\"search-result-import-path\">koko-bot/src/actions/news.js</span>",
+    "koko-bot/src/actions/news.js~news",
+    "function/index.html#static-function-news",
+    "<span>news</span> <span class=\"search-result-import-path\">koko-bot/src/actions/news.js</span>",
     "function"
   ],
   [
@@ -381,12 +375,6 @@ window.esdocSearchIndex = [
     "src/actions/favoreturn.js",
     "file/src/actions/favoreturn.js.html",
     "src/actions/favoreturn.js",
-    "file"
-  ],
-  [
-    "src/actions/hello.js",
-    "file/src/actions/hello.js.html",
-    "src/actions/hello.js",
     "file"
   ],
   [

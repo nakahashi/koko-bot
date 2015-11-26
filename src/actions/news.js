@@ -6,7 +6,7 @@ import co from 'co';
 const MINUTE = 1000 * 60;
 const HOUR = MINUTE * 60;
 
-export default function start(adapter) {
+export default function news(adapter) {
   setInterval(() => {
     co(function *() {
       let news = yield fetchNews();

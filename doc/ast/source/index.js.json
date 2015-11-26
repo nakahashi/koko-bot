@@ -83,8 +83,8 @@
             "type": "Identifier",
             "name": "route",
             "range": [
-              31,
-              36
+              30,
+              35
             ],
             "loc": {
               "start": {
@@ -98,8 +98,8 @@
             }
           },
           "range": [
-            31,
-            36
+            30,
+            35
           ],
           "loc": {
             "start": {
@@ -118,8 +118,8 @@
         "value": "koa-route",
         "raw": "'koa-route'",
         "range": [
-          42,
-          53
+          41,
+          52
         ],
         "loc": {
           "start": {
@@ -133,8 +133,8 @@
         }
       },
       "range": [
-        24,
-        55
+        23,
+        53
       ],
       "loc": {
         "start": {
@@ -156,8 +156,8 @@
             "type": "Identifier",
             "name": "koko",
             "range": [
-              62,
-              66
+              60,
+              64
             ],
             "loc": {
               "start": {
@@ -171,8 +171,8 @@
             }
           },
           "range": [
-            62,
-            66
+            60,
+            64
           ],
           "loc": {
             "start": {
@@ -191,8 +191,8 @@
         "value": "./app",
         "raw": "'./app'",
         "range": [
-          72,
-          79
+          70,
+          77
         ],
         "loc": {
           "start": {
@@ -206,8 +206,8 @@
         }
       },
       "range": [
-        55,
-        80
+        53,
+        78
       ],
       "loc": {
         "start": {
@@ -233,8 +233,8 @@
               "type": "Identifier",
               "name": "koko",
               "range": [
-                84,
-                88
+                80,
+                84
               ],
               "loc": {
                 "start": {
@@ -249,8 +249,8 @@
             },
             "arguments": [],
             "range": [
-              84,
-              90
+              80,
+              86
             ],
             "loc": {
               "start": {
@@ -267,8 +267,8 @@
             "type": "Identifier",
             "name": "start",
             "range": [
-              91,
-              96
+              87,
+              92
             ],
             "loc": {
               "start": {
@@ -282,8 +282,8 @@
             }
           },
           "range": [
-            84,
-            96
+            80,
+            92
           ],
           "loc": {
             "start": {
@@ -298,8 +298,8 @@
         },
         "arguments": [],
         "range": [
-          84,
-          98
+          80,
+          94
         ],
         "loc": {
           "start": {
@@ -313,8 +313,8 @@
         }
       },
       "range": [
-        84,
-        99
+        80,
+        95
       ],
       "loc": {
         "start": {
@@ -336,8 +336,8 @@
             "type": "Identifier",
             "name": "server",
             "range": [
-              107,
-              113
+              101,
+              107
             ],
             "loc": {
               "start": {
@@ -356,8 +356,8 @@
               "type": "Identifier",
               "name": "koa",
               "range": [
-                116,
-                119
+                110,
+                113
               ],
               "loc": {
                 "start": {
@@ -372,8 +372,8 @@
             },
             "arguments": [],
             "range": [
-              116,
-              121
+              110,
+              115
             ],
             "loc": {
               "start": {
@@ -387,8 +387,8 @@
             }
           },
           "range": [
-            107,
-            121
+            101,
+            115
           ],
           "loc": {
             "start": {
@@ -404,8 +404,8 @@
       ],
       "kind": "var",
       "range": [
-        103,
-        122
+        97,
+        116
       ],
       "loc": {
         "start": {
@@ -429,8 +429,8 @@
             "type": "Identifier",
             "name": "server",
             "range": [
-              126,
-              132
+              118,
+              124
             ],
             "loc": {
               "start": {
@@ -447,8 +447,8 @@
             "type": "Identifier",
             "name": "use",
             "range": [
-              133,
-              136
+              125,
+              128
             ],
             "loc": {
               "start": {
@@ -462,8 +462,8 @@
             }
           },
           "range": [
-            126,
-            136
+            118,
+            128
           ],
           "loc": {
             "start": {
@@ -486,8 +486,8 @@
                 "type": "Identifier",
                 "name": "route",
                 "range": [
-                  137,
-                  142
+                  129,
+                  134
                 ],
                 "loc": {
                   "start": {
@@ -504,8 +504,8 @@
                 "type": "Identifier",
                 "name": "get",
                 "range": [
-                  143,
-                  146
+                  135,
+                  138
                 ],
                 "loc": {
                   "start": {
@@ -519,8 +519,8 @@
                 }
               },
               "range": [
-                137,
-                146
+                129,
+                138
               ],
               "loc": {
                 "start": {
@@ -539,8 +539,8 @@
                 "value": "/",
                 "raw": "'/'",
                 "range": [
-                  147,
-                  150
+                  139,
+                  142
                 ],
                 "loc": {
                   "start": {
@@ -571,8 +571,8 @@
                           "object": {
                             "type": "ThisExpression",
                             "range": [
-                              170,
-                              174
+                              161,
+                              165
                             ],
                             "loc": {
                               "start": {
@@ -589,8 +589,8 @@
                             "type": "Identifier",
                             "name": "body",
                             "range": [
-                              175,
-                              179
+                              166,
+                              170
                             ],
                             "loc": {
                               "start": {
@@ -604,8 +604,8 @@
                             }
                           },
                           "range": [
-                            170,
-                            179
+                            161,
+                            170
                           ],
                           "loc": {
                             "start": {
@@ -623,8 +623,8 @@
                           "value": "hello world",
                           "raw": "'hello world'",
                           "range": [
-                            182,
-                            195
+                            173,
+                            186
                           ],
                           "loc": {
                             "start": {
@@ -638,8 +638,8 @@
                           }
                         },
                         "range": [
-                          170,
-                          195
+                          161,
+                          186
                         ],
                         "loc": {
                           "start": {
@@ -653,8 +653,8 @@
                         }
                       },
                       "range": [
-                        170,
-                        196
+                        161,
+                        187
                       ],
                       "loc": {
                         "start": {
@@ -669,8 +669,8 @@
                     }
                   ],
                   "range": [
-                    165,
-                    199
+                    157,
+                    189
                   ],
                   "loc": {
                     "start": {
@@ -686,8 +686,8 @@
                 "generator": true,
                 "expression": false,
                 "range": [
-                  152,
-                  199
+                  144,
+                  189
                 ],
                 "loc": {
                   "start": {
@@ -702,8 +702,8 @@
               }
             ],
             "range": [
-              137,
-              200
+              129,
+              190
             ],
             "loc": {
               "start": {
@@ -718,8 +718,8 @@
           }
         ],
         "range": [
-          126,
-          201
+          118,
+          191
         ],
         "loc": {
           "start": {
@@ -733,8 +733,8 @@
         }
       },
       "range": [
-        126,
-        202
+        118,
+        192
       ],
       "loc": {
         "start": {
@@ -756,8 +756,8 @@
             "type": "Identifier",
             "name": "port",
             "range": [
-              210,
-              214
+              198,
+              202
             ],
             "loc": {
               "start": {
@@ -783,8 +783,8 @@
                   "type": "Identifier",
                   "name": "process",
                   "range": [
-                    217,
-                    224
+                    205,
+                    212
                   ],
                   "loc": {
                     "start": {
@@ -801,8 +801,8 @@
                   "type": "Identifier",
                   "name": "env",
                   "range": [
-                    225,
-                    228
+                    213,
+                    216
                   ],
                   "loc": {
                     "start": {
@@ -816,8 +816,8 @@
                   }
                 },
                 "range": [
-                  217,
-                  228
+                  205,
+                  216
                 ],
                 "loc": {
                   "start": {
@@ -834,8 +834,8 @@
                 "type": "Identifier",
                 "name": "PORT",
                 "range": [
-                  229,
-                  233
+                  217,
+                  221
                 ],
                 "loc": {
                   "start": {
@@ -849,8 +849,8 @@
                 }
               },
               "range": [
-                217,
-                233
+                205,
+                221
               ],
               "loc": {
                 "start": {
@@ -868,8 +868,8 @@
               "value": 3000,
               "raw": "3000",
               "range": [
-                237,
-                241
+                225,
+                229
               ],
               "loc": {
                 "start": {
@@ -883,8 +883,8 @@
               }
             },
             "range": [
-              217,
-              241
+              205,
+              229
             ],
             "loc": {
               "start": {
@@ -898,8 +898,8 @@
             }
           },
           "range": [
-            210,
-            241
+            198,
+            229
           ],
           "loc": {
             "start": {
@@ -915,8 +915,8 @@
       ],
       "kind": "var",
       "range": [
-        206,
-        242
+        194,
+        230
       ],
       "loc": {
         "start": {
@@ -940,8 +940,8 @@
             "type": "Identifier",
             "name": "server",
             "range": [
-              244,
-              250
+              231,
+              237
             ],
             "loc": {
               "start": {
@@ -958,8 +958,8 @@
             "type": "Identifier",
             "name": "listen",
             "range": [
-              251,
-              257
+              238,
+              244
             ],
             "loc": {
               "start": {
@@ -973,8 +973,8 @@
             }
           },
           "range": [
-            244,
-            257
+            231,
+            244
           ],
           "loc": {
             "start": {
@@ -992,8 +992,8 @@
             "type": "Identifier",
             "name": "port",
             "range": [
-              258,
-              262
+              245,
+              249
             ],
             "loc": {
               "start": {
@@ -1008,8 +1008,8 @@
           }
         ],
         "range": [
-          244,
-          263
+          231,
+          250
         ],
         "loc": {
           "start": {
@@ -1023,8 +1023,8 @@
         }
       },
       "range": [
-        244,
-        264
+        231,
+        251
       ],
       "loc": {
         "start": {
@@ -1048,8 +1048,8 @@
             "type": "Identifier",
             "name": "console",
             "range": [
-              266,
-              273
+              252,
+              259
             ],
             "loc": {
               "start": {
@@ -1066,8 +1066,8 @@
             "type": "Identifier",
             "name": "log",
             "range": [
-              274,
-              277
+              260,
+              263
             ],
             "loc": {
               "start": {
@@ -1081,8 +1081,8 @@
             }
           },
           "range": [
-            266,
-            277
+            252,
+            263
           ],
           "loc": {
             "start": {
@@ -1104,8 +1104,8 @@
               "value": "listening on port : ",
               "raw": "'listening on port : '",
               "range": [
-                278,
-                300
+                264,
+                286
               ],
               "loc": {
                 "start": {
@@ -1122,8 +1122,8 @@
               "type": "Identifier",
               "name": "port",
               "range": [
-                303,
-                307
+                289,
+                293
               ],
               "loc": {
                 "start": {
@@ -1137,8 +1137,8 @@
               }
             },
             "range": [
-              278,
-              307
+              264,
+              293
             ],
             "loc": {
               "start": {
@@ -1153,8 +1153,8 @@
           }
         ],
         "range": [
-          266,
-          308
+          252,
+          294
         ],
         "loc": {
           "start": {
@@ -1168,8 +1168,8 @@
         }
       },
       "range": [
-        266,
-        309
+        252,
+        295
       ],
       "loc": {
         "start": {
@@ -1186,7 +1186,7 @@
   "sourceType": "module",
   "range": [
     0,
-    309
+    295
   ],
   "loc": {
     "start": {

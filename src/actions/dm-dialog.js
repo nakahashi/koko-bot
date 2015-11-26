@@ -5,7 +5,7 @@ import User from '../models/user';
 const DOCOMO_API = "https://api.apigw.smt.docomo.ne.jp/dialogue/v1/dialogue?APIKEY="
 const DOCOMO_TOKEN = process.env.BOT_DOCOMO_TOKEN;
 
-export default function start(adapter) {
+export default function dmDialog(adapter) {
   let api = adapter.api;
   let stream = api.stream('user');
 
